@@ -4,7 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-app.config.from_object(os.environ['APP_SETTINGS'])
+app.config['APP_SETTINGS'] = "config.ProductionConfig"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://ubuntu:postgres@localhost/portfolio"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
