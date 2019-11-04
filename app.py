@@ -51,4 +51,4 @@ def submit_form():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0:8000')
