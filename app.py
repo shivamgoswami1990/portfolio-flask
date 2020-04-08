@@ -1,14 +1,12 @@
 import os
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
 
 app = Flask(__name__)
 
 app.config['APP_SETTINGS'] = "config.ProductionConfig"
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://ubuntu:postgres@localhost/portfolio"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
 from models import Statistic
@@ -32,9 +30,11 @@ def get_by_id(id_):
         return str(e)
 
 
-@app.route("/submit_form", methods=['POST'])
+@app.route("/submit_form", methods=['POST', 'OPTIONS'])
 def submit_form():
-    if request.method == 'POST':
+    if request.method == 'OPTIONS':  # CORS preflight
+        return _build_cors_prelight_response()
+    elif request.method == 'POST':  # The actual request following the preflight
         name = request.get_json().get('name')
         email = request.get_json().get('email')
         subject = request.get_json().get('subject')
@@ -48,10 +48,22 @@ def submit_form():
             )
             db.session.add(statistic)
             db.session.commit()
-            return "Statistic added. statistic id={}".format(statistic.id)
+            return _corsify_actual_response(jsonify("Statistic added. statistic id={}".format(statistic.id)))
         except Exception as e:
             return str(e)
 
+
+def _build_cors_prelight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0:8000')
