@@ -1,12 +1,14 @@
 import os
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 app = Flask(__name__)
 
 app.config['APP_SETTINGS'] = "config.ProductionConfig"
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://ubuntu:postgres@localhost/portfolio"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
 from models import Statistic
