@@ -14,7 +14,7 @@ colorama==0.3.7
 ConfigArgParse==0.11.0
 configobj==5.0.6
 constantly==15.1.0
-cryptography==2.1.4
+cryptography==3.2
 Flask==1.1.1
 Flask-Cors==3.0.8
 Flask-Migrate==2.5.2
